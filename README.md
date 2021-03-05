@@ -27,7 +27,7 @@ FreeOpcUa: https://github.com/FreeOpcUa/python-opcua
 
 The project is focused on a simple demonstration of Client / Server communication via OPC UA. In this case, it is a B&R PLC server and the client is a Python or C# application. An example of an application is reading and writing data of different type (BOOL, REAL / LREAL).
 
-Communication (C# application) can be used in Unity3D for digital twins / augmented reality or in the ROS system (Python or similar approaches as C++).
+In PLC configuration packages, it is mandatory to activate OPC UA communication with port 4840 and enable the structure of variables for reading and writing.
 
 **Node Identification (NodeId):**
 
@@ -38,6 +38,8 @@ s (Part 2) = Variable (read / write)
 
 string -> "ns=6;s=::Task:Var"
 ```
+
+Communication (C# application) can be used in Unity3D for digital twins / augmented reality or in the ROS system (Python or similar approaches as C++).
 
 ## Project Hierarchy:
 
