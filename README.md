@@ -29,6 +29,15 @@ The project is focused on a simple demonstration of Client / Server communicatio
 
 Communication (C# application) can be used in Unity3D for digital twins / augmented reality or in the ROS system (Python or similar approaches as C++).
 
+**Node Identification (NodeId):**
+
+```bash
+ns = all variables use a number (6)
+s  = Task/Program name + Variable (read / write)
+
+string -> "ns=6;s=::Task:Var"
+```
+
 ## Project Hierarchy:
 
 **Server (B&R PLC) - Repositary [/BaR_PLC_Server/OPCUa_Client_simple/Logical/]:**
