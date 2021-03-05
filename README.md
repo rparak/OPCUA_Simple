@@ -27,7 +27,7 @@ FreeOpcUa: https://github.com/FreeOpcUa/python-opcua
 
 The project is focused on a simple demonstration of Client / Server communication via OPC UA. In this case, it is a B&R PLC server and the client is a Python or C# application. An example of an application is reading and writing data from a server to a client.
 
-Communication (C# application) can be used in Unity3D for digital twins / augmented reality or in the ROS system (Python or similar approach).
+Communication (C# application) can be used in Unity3D for digital twins / augmented reality or in the ROS system (Python or similar approaches as C++).
 
 **Server (B&R PLC) - Repositary [/BaR_PLC_Server/OPCUa_Client_simple/Logical/]:**
 
