@@ -5,7 +5,7 @@
 **Software:**
 ```bash
 B&R Automation Studio
-Programming language: C#, Python
+Programming Language: C#, Python
 ```
 
 **Packages:**
