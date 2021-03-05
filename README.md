@@ -33,7 +33,8 @@ Communication (C# application) can be used in Unity3D for digital twins / augmen
 
 ```bash
 ns = all variables use a number (6)
-s  = Task/Program name + Variable (read / write)
+s (Part 1) = Task/Program name
+s (Part 2) = Variable (read / write)
 
 string -> "ns=6;s=::Task:Var"
 ```
