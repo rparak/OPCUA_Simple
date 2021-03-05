@@ -29,6 +29,8 @@ The project is focused on a simple demonstration of Client / Server communicatio
 
 Communication (C# application) can be used in Unity3D for digital twins / augmented reality or in the ROS system (Python or similar approaches as C++).
 
+## Project Hierarchy:
+
 **Server (B&R PLC) - Repositary [/BaR_PLC_Server/OPCUa_Client_simple/Logical/]:**
 
 ```bash
