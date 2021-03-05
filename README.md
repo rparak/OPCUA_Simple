@@ -42,7 +42,7 @@ string -> "ns=6;s=::Task:Var"
 ```
 
 <p align="center">
-<img src=https://github.com/rparak/Programming-for-robots-and-manipulators-VRM/blob/main/images/lab.png width="650" height="350">
+<img src=https://github.com/rparak/OPCUA_Simple/blob/main/images/communication_scheme.png width="650" height="350">
 </p>
 
 ## Project Hierarchy:
