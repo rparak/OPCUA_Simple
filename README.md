@@ -41,6 +41,10 @@ s (Part 2) = Variable (read / write)
 string -> "ns=6;s=::Task:Var"
 ```
 
+<p align="center">
+<img src=https://github.com/rparak/Programming-for-robots-and-manipulators-VRM/blob/main/images/lab.png width="650" height="350">
+</p>
+
 ## Project Hierarchy:
 
 **Server (B&R PLC) - Repositary [/BaR_PLC_Server/OPCUa_Client_simple/Logical/]:**
