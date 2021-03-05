@@ -23,7 +23,25 @@ OPCFoundation: https://www.nuget.org/packages/OPCFoundation.NetStandard.Opc.Ua/
 
 FreeOpcUa: https://github.com/FreeOpcUa/python-opcua
 
-## Description:
+## Project Description:
+
+**Server (B&R PLC) - Repositary [/BaR_PLC_Server/OPCUa_Client_simple/Logical/]:**
+
+```bash
+[ AS Main Program ] /Server_t/Main.c/
+```
+
+**Client (C#) - Repositary [/C_Sharp_Client/Opcua_client/Opcua_client/]:**
+
+```bash
+[ Main Program (Application) ] /Program.cs/
+```
+
+**Client (Python) - Repositary [/Python_Client/]:**
+
+```bash
+[ Main Program (Script) ] /client_opcua_simple.py/
+```
 
 ## Contact Info:
 Roman.Parak@outlook.com
