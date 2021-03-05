@@ -4,16 +4,22 @@
 
 **Software:**
 ```bash
-B&R Automation Studio
-Programming Language: C#, Python
+B&R Automation Studio, Visual Studio (or something similar)
+```
+
+**Programming Language:**
+```bash
+C#, Python
 ```
 
 **Packages:**
 ```bash
-C# (OPCFoundation): https://www.nuget.org/packages/OPCFoundation.NetStandard.Opc.Ua/
-Python (FreeOpcUa): https://github.com/FreeOpcUa/python-opcua
+C# (OPCFoundation), Python (FreeOpcUa)
 ```
+OPCFoundation: https://www.nuget.org/packages/OPCFoundation.NetStandard.Opc.Ua/
+FreeOpcUa: https://github.com/FreeOpcUa/python-opcua
 
+## Description:
 
 ## Contact Info:
 Roman.Parak@outlook.com
