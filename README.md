@@ -29,7 +29,7 @@ The project is focused on a simple demonstration of Client / Server communicatio
 
 In PLC configuration packages, it is mandatory to activate OPC UA communication with port 4840 and enable the structure of variables for reading and writing.
 
-Communication (C# application) can be used in Unity3D for digital twins / augmented reality or in the ROS system (Python or similar approaches as C++).
+The application uses performance optimization using multi-threaded programming. Communication (C# application) can be used in Unity3D for digital twins / augmented reality or in the ROS system (Python or similar approaches as C++).
 
 **Node Identification (NodeId):**
 
