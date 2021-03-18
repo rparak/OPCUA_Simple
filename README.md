@@ -31,6 +31,8 @@ In PLC configuration packages, it is mandatory to activate OPC UA communication 
 
 The application uses performance optimization using multi-threaded programming. Communication (C# application) can be used in Unity3D for digital twin / augmented reality or in the ROS system (Python or similar approaches as C++).
 
+The project was realized at Institute of Automation and Computer Science, Brno University of Technology, Faculty of Mechanical Engineering (NETME Centre - Cybernetics and Robotics Division).
+
 **Node Identification (NodeId):**
 
 ```bash
