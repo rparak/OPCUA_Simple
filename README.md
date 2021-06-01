@@ -57,7 +57,7 @@ string -> "ns=6;s=::Task:Var"
 [ AS Main Program ] /Server_t/Main.c/
 ```
 
-**Client (C#) - Repositary [/C_Sharp_Client/Opcua_client/Opcua_client/]:**
+**Client (C#) - Repositary [/C_Sharp_Client/Opcua_client/]:**
 
 ```bash
 [ Main Program (Application) ] /Program.cs/
