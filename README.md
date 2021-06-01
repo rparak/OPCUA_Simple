@@ -6,9 +6,11 @@
 ```bash
 B&R Automation Studio, Visual Studio (or something similar)
 ```
-B&R Automation: https://www.br-automation.com/en/downloads/#categories=Software-1344987434933
 
-Visual Studio: https://visualstudio.microsoft.com/downloads/
+| Software/Package      | Link                                                                                  |
+| --------------------- | ------------------------------------------------------------------------------------- |
+| B&R Automation        | https://www.br-automation.com/en/downloads/#categories=Software-1344987434933         |
+| Visual Studio         | https://visualstudio.microsoft.com/downloads/                                         |
 
 **Programming Language:**
 ```bash
