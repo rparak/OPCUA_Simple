@@ -27,7 +27,7 @@ FreeOpcUa: https://github.com/FreeOpcUa/python-opcua
 
 ## Project Description:
 
-The project is focused on a simple demonstration of Client / Server communication via OPC UA. In this case, it is a B&R Automation PLC (server), which communicates with the client via the C# or Python application. An example of an application is reading and writing data of different types (BOOL, REAL / LREAL).
+The project is focused on a simple demonstration of client-server communication via OPC UA. In this case, it is a B&R Automation PLC (server), which communicates with the client via the C# or Python application. An example of an application is reading and writing data of different types (BOOL, REAL / LREAL).
 
 In PLC configuration packages, it is mandatory to activate OPC UA communication with port 4840 and enable the structure of variables for reading and writing.
 
