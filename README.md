@@ -72,5 +72,17 @@ string -> "ns=6;s=::Task:Var"
 ## Contact Info:
 Roman.Parak@outlook.com
 
+## Citation (BibTex)
+```bash
+@misc{RomanParak_DT_BaR,
+  author = {Roman Parak},
+  title = {Data collection from the B&R Automation control system using the OPC UA communication protocol},
+  year = {2020-2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/rparak/OPCUA_Simple/}}
+}
+```
+
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
