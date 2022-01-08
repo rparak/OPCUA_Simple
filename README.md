@@ -51,22 +51,26 @@ string -> "ns=6;s=::Task:Var"
 
 ## Project Hierarchy:
 
-**Server (B&R PLC) - Repositary [/BaR_PLC_Server/OPCUa_Client_simple/Logical/]:**
+**Server (B&R PLC) - Repositary [/BaR_PLC_Server/OPCUa_Client_simple/test/Logical/]:**
 
 ```bash
-[ AS Main Program ] /Server_t/Main.c/
-```
+Server (B&R PLC) - Repositary [/BaR_PLC_Server/OPCUa_Client_simple/test/Logical/]
+[ AS Main Program ] /Program/Main.c/
 
-**Client (C#) - Repositary [/C_Sharp_Client/Opcua_client/]:**
-
-```bash
+Client (C#) - Repositary [/C_Sharp_Client/Opcua_client/]
 [ Main Program (Application) ] /Program.cs/
-```
 
-**Client (Python) - Repositary [/Python_Client/]:**
+Client (Python) - Repositary [/Python_Client/]:
+[ Main Program (Sync. Write)  ] /example_write_opcua_sync.py/
+[ Main Program (Sync. Read)   ] /example_read_opcua_sync.py/
+[ Main Program (ASync. Write) ] /example_write_opcua_async.py/
+[ Main Program (ASync. Read)  ] /example_read_opcua_async.py/
+[ Data Evalation              ] /opcua_evaluation.py/
 
-```bash
-[ Main Program (Script) ] /client_opcua_simple.py/
+Data - Repositary [/Python_Client/Data/]:
+[ Collection Data (Python, C#) ] /CSharp_OPC_UA_Data_Evaluation_Sync.txt/ 
+                                 /Python_OPC_UA_Data_Evaluation_ASync.txt/ 
+                                 /Python_OPC_UA_Data_Evaluation_Sync.txt/
 ```
 
 ## Contact Info:
