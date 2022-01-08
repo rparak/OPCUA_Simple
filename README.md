@@ -93,17 +93,17 @@ Data - Repositary [/Python_Client/Data/]:
 ## Evaluation: Server -> Client:
 **Python Sync.:**
 <p align="center">
- <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/Python_OPCUA_Server_Client_Sync.PNG" width="800" height="450">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/Python_OPCUA_Server_Client_Sync.png" width="800" height="450">
 </p>
 
 **Python ASync.:**
 <p align="center">
- <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/Python_OPCUA_Server_Client_ASync.PNG" width="800" height="450">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/Python_OPCUA_Server_Client_ASync.png" width="800" height="450">
 </p>
 
 **CSharp:**
 <p align="center">
- <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/CSharp_OPCUA_Server_Client.PNG" width="800" height="450">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/CSharp_OPCUA_Server_Client.png" width="800" height="450">
 </p>
 
 ## Contact Info:
