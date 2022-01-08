@@ -23,182 +23,224 @@ Github   : https://github.com/rparak
 File Name: Program.cs
 ****************************************************************************/
 
-// ------------------------------------------------------------------------------------------------------------------------//
-// ----------------------------------------------------- LIBRARIES --------------------------------------------------------//
-// ------------------------------------------------------------------------------------------------------------------------//
-
-// -------------------- System -------------------- //
+// System Lib.
 using System;
+using System.Threading;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 
-// -------------------- Opc Ua -------------------- //
+// OPC UA
 using Opc.Ua;
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
 
-namespace Opcua_client
+/*
+    Description:
+        Node:
+            ns = all variables use a number (6)
+            s(Part 1) = Program(Task) Name, 
+                Note: If the variable is global, the task name is AsGlobalPV.
+            s (Part 2) = Variable(read / write)
+
+            string -> 'ns=6;s=::Program:Test_Variable_REAL_W'
+ */
+
+namespace OpcUa_client
 {
+    public static class OpcUa_Read_Data
+    {
+        // Network IP Address
+        public static string ip_address;
+        // Network Port Number
+        public const ushort port_number = 4840;
+        // Comunication Speed (ms)
+        public static int time_step;
+        // Node: 'ns=6;s=::Program:Test_Variable_REAL_R'
+        public static NodeId node;
+        // Result value from the node
+        public static float[] value = new float[10];
+    }
+
+    public static class OpcUa_Write_Data
+    {
+        // Network IP Address
+        public static string ip_address;
+        // Network Port Number
+        public const ushort port_number = 4840;
+        // Comunication Speed (ms)
+        public static int time_step;
+        // Node: 'ns=6;s=::Program:Test_Variable_REAL_R[..]'
+        public static string[] node = new string[10];
+    }
+
+    public static class Program_Data
+    {
+        // Results matrix from data collection (Server -> Client)
+        public static List<List<float>> result = new List<List<float>>();
+        // Additional parameters for the SINE function
+        public const double SINE_VAR_1 = 1;
+        public const double SINE_VAR_2 = 25;
+    }
+
     class Program
     {
-        // -------------------- ApplicationConfiguration -------------------- //
-        static ApplicationConfiguration client_configuration_r = new ApplicationConfiguration();
-        static ApplicationConfiguration client_configuration_w = new ApplicationConfiguration();
-        // -------------------- EndpointDescription -------------------- //
-        static EndpointDescription client_end_point_r, client_end_point_w;
-        // -------------------- Session -------------------- //
-        static Session client_session_r, client_session_w;
-        // -------------------- Thread -------------------- //
-        static Thread opcua_client_r_Thread, opcua_client_w_Thread;
-        // -------------------- NodeId -------------------- //
-        static NodeId node_read_start_v, node_read_move_v;
-        // -------------------- String -------------------- //
-        static string node_write_start_v;
-        static string program_name;
-        // -------------------- Bool -------------------- //
-        static bool read_start_v;
-        static bool opcua_c_r_while, opcua_c_w_while;
-        static bool start_move_m, is_moving_m;
-        // -------------------- Float -------------------- //
-        static float read_move_v;
-
-        // ------------------------------------------------------------------------------------------------------------------------//
-        // ------------------------------------------------ MAIN FUNCTION {Cyclic} ------------------------------------------------//
-        // ------------------------------------------------------------------------------------------------------------------------//
         static void Main(string[] args)
         {
-            // ------------------------ Initialization { OPCUa Config.} ------------------------//
-            // Robot IP Address
-            string ip_adr_robot = "127.0.0.1";
-            // Robot Port
-            string port_adr_robot = "4840";
+            // Variable used  to save data to a file from the OPC UA server (read)
+            bool save_data = false;
 
-            // ------------------------ Threading Block { OPCUa Read Data } ------------------------//
-            opcua_c_r_while = true;
-            opcua_client_r_Thread = new Thread(() => OPCUa_r_thread_function(ip_adr_robot, port_adr_robot));
-            opcua_client_r_Thread.IsBackground = true;
-            opcua_client_r_Thread.Start();
+            // Configuration Client <-> Server
+            //   Ip Address (B&R Automation PLC)
+            OpcUa_Read_Data.ip_address = OpcUa_Write_Data.ip_address = "127.0.0.1";
+            //   Time Step (10 ms)
+            OpcUa_Read_Data.time_step = OpcUa_Write_Data.time_step = 10;
 
-            // ------------------------ Threading Block { OPCUa Write Data } ------------------------//
-            opcua_c_w_while = true;
-            opcua_client_w_Thread = new Thread(() => OPCUa_w_thread_function(ip_adr_robot, port_adr_robot));
-            opcua_client_w_Thread.IsBackground = true;
-            opcua_client_w_Thread.Start();
+            // Initialization of the B&R Automation PLC OPC UA nodes
+            //      Type NodeId: (Client: Read, Server: Write)
+            OpcUa_Read_Data.node = "ns=6;s=::Program:Test_Variable_REAL_W";
+            //      Type String: (Client: Write, Server: Read)
+            for(int i = 0; i < OpcUa_Write_Data.node.Length; ++i) 
+            {
+                OpcUa_Write_Data.node[i] = $"ns=6;s=::Program:Test_Variable_REAL_R[{i}]";
+            }
 
-            // ------------------------ Main Block { Control of the PLC (B&R) } ------------------------//
+            /*
+                Note:
+                    Uncomment the OPC UA communication type for Read/Write data.
+             */
+
+            // Start Read {OPC UA Communication}
+            //OpcUa_Read opcua_read_plc = new OpcUa_Read();
+            //opcua_read_plc.Start();
+
+            // Start Read {OPC UA Communication}
+            OpcUa_Write opcua_write_plc = new OpcUa_Write();
+            opcua_write_plc.Start();
+
+            Console.WriteLine("[INFO] Stop (y):");
+            // Stop communication
+            string stop_rs = Convert.ToString(Console.ReadLine());
+
+            if (stop_rs == "y")
+            {
+                if (save_data == true)
+                {
+                    Write_Data(Program_Data.result, "CSharp_OPC_UA_Data_Evaluation_Sync.txt");
+                    Console.WriteLine("File saved successfully!");
+                }
+
+                // Destroy B&R OpcUa Client (Read / Write)
+                //opcua_read_plc.Destroy();
+                opcua_write_plc.Destroy();
+
+                // Application quit
+                Environment.Exit(0);
+            }
+        }
+
+        public static void Write_Data(List<List<float>> result, string file_path)
+        {
             try
             {
-                // Program name {Task}
-                program_name = "Server_t";
-                // Node {Read}
-                node_read_start_v = "ns=6;s=::"+ program_name + ":start_var";
-                node_read_move_v  = "ns=6;s=::" + program_name + ":move_var";
-                // Node {Write}
-                node_write_start_v = "ns=6;s=::" + program_name + ":start_var";
-
-                // -------------------- Main Cycle {While} -------------------- //
-                while (true)
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@file_path, true))
                 {
+                    int i = 0;
+                    foreach (var row in result)
+                    {
+                        int j = 0;
+                        file.Write(i.ToString() + ",");
+                        foreach (var element in row)
+                        {
+                            if (row.Count > j + 1)
+                            {
+                                file.Write(element.ToString() + ",");
+                            }
+                            else
+                            {
+                                file.Write(element.ToString());
+                            }
 
-                    // -------------------- Move Instruction {R/W} -------------------- //
-                    if (read_start_v == false)
-                    {
-                        Console.WriteLine("Start command: {0}", read_start_v);
-                        // Start moving {Start - ON} -> Edge variable
-                        start_move_m = true;
+                            j++;
+                        }
+                        file.WriteLine();
+                        i++;
                     }
-                    else
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Error: ", ex);
+            }
+        }
+    }
+
+    class OpcUa_Read
+    {
+        // Initialization of Class variables
+        //  Thread
+        private Thread opcua_thread = null;
+        private bool exit_thread = false;
+        //  OPCUa Client 
+        ApplicationConfiguration app_configuration = new ApplicationConfiguration();
+
+        public void OpcUa_Read_Thread()
+        {
+            try
+            {
+                // OPCUa Client configuration
+                app_configuration = OpcUa_Client_Configuration();
+                // Establishing communication
+                EndpointDescription end_point = CoreClientUtils.SelectEndpoint("opc.tcp://" + OpcUa_Read_Data.ip_address + ":" + OpcUa_Read_Data.port_number, useSecurity: false);
+                // Create session
+                Session client_session = OpcUa_Create_Session(app_configuration, end_point);
+
+                // Initialization timer
+                var t = new Stopwatch();
+
+                int counter = 0;
+                while (exit_thread == false)
+                {
+                    // t_{0}: Timer start.
+                    t.Start();
+
+                    // Reading actual data from the source(OpcUa Client)
+                    OpcUa_Read_Data.value = Array.ConvertAll(client_session.ReadValue(OpcUa_Read_Data.node).ToString().Split(new[] { '{', '}', '|', }, StringSplitOptions.RemoveEmptyEntries), float.Parse);
+
+                    // Data collection for evaluation
+                    if (counter < 1000)
                     {
-                        Console.WriteLine("Start command: {0} || Move variable: {1}", read_start_v, read_move_v);
-                        // Is moving variable
-                        is_moving_m = true;
+                        Program_Data.result.Add(OpcUa_Read_Data.value.ToList());
                     }
 
-                    if(is_moving_m == true)
+                    // Increase counter variable
+                    counter++;
+
+                    // t_{1}: Timer stop.
+                    t.Stop();
+
+                    // Recalculate the time: t = t_{1} - t_{0} -> Elapsed Time in milliseconds
+                    if (t.ElapsedMilliseconds < OpcUa_Read_Data.time_step)
                     {
-                        // Start moving {Start - OFF} -> Edge variable
-                        start_move_m = false;
+                        Thread.Sleep(OpcUa_Read_Data.time_step - (int)t.ElapsedMilliseconds);
                     }
-                    // Thread Sleep {100 ms}
-                    Thread.Sleep(100);
+
+                    // Reset (Restart) timer.
+                    t.Restart();
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("Communication Problem: {0}", e);
             }
-            finally
-            {
-                Application_Quit();
-            }
-
         }
 
-        // ------------------------------------------------------------------------------------------------------------------------//
-        // -------------------------------------------------------- FUNCTIONS -----------------------------------------------------//
-        // ------------------------------------------------------------------------------------------------------------------------//
-
-        // -------------------- Abort Threading Blocks -------------------- //
-        static void Application_Quit()
+        Session OpcUa_Create_Session(ApplicationConfiguration client_configuration, EndpointDescription client_end_point)
         {
-            opcua_c_r_while = false;
-            opcua_client_r_Thread.Abort();
-
-            opcua_client_w_Thread.Abort();
-            opcua_c_w_while = false;
-
+            return Session.Create(client_configuration, new ConfiguredEndpoint(null, client_end_point, EndpointConfiguration.Create(client_configuration)), false, "", 10000, null, null).GetAwaiter().GetResult();
         }
 
-        // ------------------------ Threading Block { OPCUa Read Data } ------------------------//
-        static void OPCUa_r_thread_function(string ip_adr, string port_adr)
-        {
-            // OPCUa client configuration
-            client_configuration_r = opcua_client_configuration();
-            // Establishing communication
-            client_end_point_r = CoreClientUtils.SelectEndpoint("opc.tcp://" + ip_adr + ":" + port_adr, useSecurity: false, operationTimeout: 10000);
-            // Create session
-            client_session_r = opcua_create_session(client_configuration_r, client_end_point_r);
-
-            // Threading while {read data}
-            while (opcua_c_r_while)
-            {
-                // Read Data - BOOL
-                read_start_v = bool.Parse(client_session_r.ReadValue(node_read_start_v).ToString());
-
-                if (read_start_v == true)
-                {
-                    // Read Data - Float (Automation Studio B&R -> REAL/LREAL)
-                    read_move_v = float.Parse(client_session_r.ReadValue(node_read_move_v).ToString());
-                }
-            }
-        }
-
-        // ------------------------ Threading Block { OPCUa Write Data } ------------------------//
-        static void OPCUa_w_thread_function(string ip_adr, string port_adr)
-        {
-            // OPCUa client configuration
-            client_configuration_w = opcua_client_configuration();
-            // Establishing communication
-            client_end_point_w = CoreClientUtils.SelectEndpoint("opc.tcp://" + ip_adr + ":" + port_adr, useSecurity: false, operationTimeout: 10000);
-            // Create session
-            client_session_w = opcua_create_session(client_configuration_w, client_end_point_w);
-
-            // Threading while {write data}
-            while (opcua_c_w_while)
-            {
-                if (start_move_m == true)
-                {
-                    // Write Data - BOOL
-                    opcua_write_value(client_session_w, node_write_start_v, "True");
-                }
-            }
-        }
-
-        // ------------------------ OPCUa Client {Application -> Configuration (STEP 1)} ------------------------//
-        static ApplicationConfiguration opcua_client_configuration()
+        ApplicationConfiguration OpcUa_Client_Configuration()
         {
             // Configuration OPCUa Client {W/R -> Data}
             var config = new ApplicationConfiguration()
@@ -240,14 +282,136 @@ namespace Opcua_client
             return config;
         }
 
-        // ------------------------ OPCUa Client {Application -> Create Session (STEP 2)} ------------------------//
-        static Session opcua_create_session(ApplicationConfiguration client_configuration, EndpointDescription client_end_point)
+        public void Start()
+        {
+            exit_thread = false;
+            // Start a thread to read OPCUA PLC
+            opcua_thread = new Thread(new ThreadStart(OpcUa_Read_Thread));
+            opcua_thread.IsBackground = true;
+            opcua_thread.Start();
+        }
+        public void Stop()
+        {
+            exit_thread = true;
+            // Start a thread
+            if (opcua_thread.IsAlive == true)
+            {
+                Thread.Sleep(100);
+            }
+        }
+        public void Destroy()
+        {
+            // Stop a thread (OPCUA communication)
+            Stop();
+            Thread.Sleep(100);
+        }
+    }
+
+    class OpcUa_Write
+    {
+        // Initialization of Class variables
+        //  Thread
+        private Thread opcua_thread = null;
+        private bool exit_thread = false;
+        //  OPCUa Client 
+        ApplicationConfiguration app_configuration = new ApplicationConfiguration();
+
+        public void OpcUa_Write_Thread()
+        {
+            try
+            {
+                // OPCUa Client configuration
+                app_configuration = OpcUa_Client_Configuration();
+                // Establishing communication
+                EndpointDescription end_point = CoreClientUtils.SelectEndpoint("opc.tcp://" + OpcUa_Read_Data.ip_address + ":" + OpcUa_Read_Data.port_number, useSecurity: false);
+                // Create session
+                Session client_session = OpcUa_Create_Session(app_configuration, end_point);
+
+                // Initialization timer
+                var t = new Stopwatch();
+
+                int counter = 0;
+                while (exit_thread == false)
+                {
+                    // t_{0}: Timer start.
+                    t.Start();
+
+                    // Writing data to source (OpcUa client) 
+                    foreach (string node_id in OpcUa_Write_Data.node)
+                    {
+                        OpcUa_Write_Value(client_session, node_id, (Program_Data.SINE_VAR_1 * Math.Sin(counter / Program_Data.SINE_VAR_2)).ToString());
+                    }
+
+                    // Increase counter variable
+                    counter++;
+
+                    // t_{1}: Timer stop.
+                    t.Stop();
+
+                    // Recalculate the time: t = t_{1} - t_{0} -> Elapsed Time in milliseconds
+                    if (t.ElapsedMilliseconds < OpcUa_Write_Data.time_step)
+                    {
+                        Thread.Sleep(OpcUa_Write_Data.time_step - (int)t.ElapsedMilliseconds);
+                    }
+
+                    // Reset (Restart) timer.
+                    t.Restart();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Communication Problem: {0}", e);
+            }
+        }
+
+        Session OpcUa_Create_Session(ApplicationConfiguration client_configuration, EndpointDescription client_end_point)
         {
             return Session.Create(client_configuration, new ConfiguredEndpoint(null, client_end_point, EndpointConfiguration.Create(client_configuration)), false, "", 10000, null, null).GetAwaiter().GetResult();
         }
 
-        // ------------------------ OPCUa Client {Write Value (Define - Node)} ------------------------//
-        static bool opcua_write_value(Session client_session, string node_id, string value_write)
+        ApplicationConfiguration OpcUa_Client_Configuration()
+        {
+            // Configuration OPCUa Client {W/R -> Data}
+            var config = new ApplicationConfiguration()
+            {
+                // Initialization (Name, Uri, etc.)
+                ApplicationName = "OPCUa_AS", // OPCUa AS (Automation Studio B&R)
+                ApplicationUri = Utils.Format(@"urn:{0}:OPCUa_AS", System.Net.Dns.GetHostName()),
+                // Type -> Client
+                ApplicationType = ApplicationType.Client,
+                SecurityConfiguration = new SecurityConfiguration
+                {
+                    // Security Configuration - Certificate
+                    ApplicationCertificate = new CertificateIdentifier { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\MachineDefault", SubjectName = Utils.Format(@"CN={0}, DC={1}", "OPCUa_AS", System.Net.Dns.GetHostName()) },
+                    TrustedIssuerCertificates = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\UA Certificate Authorities" },
+                    TrustedPeerCertificates = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\UA Applications" },
+                    RejectedCertificateStore = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\RejectedCertificates" },
+                    AutoAcceptUntrustedCertificates = true,
+                    AddAppCertToTrustedStore = true
+                },
+                TransportConfigurations = new TransportConfigurationCollection(),
+                TransportQuotas = new TransportQuotas { OperationTimeout = 10000 },
+                ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 10000 },
+                TraceConfiguration = new TraceConfiguration()
+            };
+            config.Validate(ApplicationType.Client).GetAwaiter().GetResult();
+            if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
+            {
+                config.CertificateValidator.CertificateValidation += (s, e) => { e.Accept = (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted); };
+            }
+
+            var application = new ApplicationInstance
+            {
+                ApplicationName = "OPCUa_AS",
+                ApplicationType = ApplicationType.Client,
+                ApplicationConfiguration = config
+            };
+            application.CheckApplicationInstanceCertificate(false, 2048).GetAwaiter().GetResult();
+
+            return config;
+        }
+
+        bool OpcUa_Write_Value(Session client_session, string node_id, string value_write)
         {
             // Initialization
             NodeId init_node = NodeId.Parse(node_id);
@@ -278,14 +442,7 @@ namespace Opcua_client
                 client_session.Write(null, init_write, out results, out diagnosticInfos);
 
                 // Check Result (Status)
-                if (results[0] == StatusCodes.Good)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return (results[0] == StatusCodes.Good) ? true : false;
 
             }
             catch (Exception e)
@@ -294,6 +451,30 @@ namespace Opcua_client
 
                 return false;
             }
+        }
+
+        public void Start()
+        {
+            exit_thread = false;
+            // Start a thread to read OPCUA PLC
+            opcua_thread = new Thread(new ThreadStart(OpcUa_Write_Thread));
+            opcua_thread.IsBackground = true;
+            opcua_thread.Start();
+        }
+        public void Stop()
+        {
+            exit_thread = true;
+            // Start a thread
+            if (opcua_thread.IsAlive == true)
+            {
+                Thread.Sleep(100);
+            }
+        }
+        public void Destroy()
+        {
+            // Stop a thread (OPCUA communication)
+            Stop();
+            Thread.Sleep(100);
         }
     }
 }
