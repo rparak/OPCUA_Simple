@@ -101,9 +101,9 @@ Data - Repositary [/Python_Client/Data/]:
  <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/Python_OPCUA_Server_Client_ASync.png" width="800" height="450">
 </p>
 
-**CSharp:**
+**CSharp Sync.:**
 <p align="center">
- <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/CSharp_OPCUA_Server_Client.png" width="800" height="450">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/CSharp_OPCUA_Server_Client_Sync.png" width="800" height="450">
 </p>
 
 ## Contact Info:
