@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio Version=4.10.3.60 FileVersion="4.9"?>
+<Hardware xmlns="http://br-automation.co.at/AS/Hardware">
+  <Module Name="X20CP3687X" Type="X20CP3687X" Version="1.4.0.0">
+    <Connector Name="IF2">
+      <Parameter ID="ActivateDevice" Value="1" />
+    </Connector>
+    <Parameter ID="ConfigurationID" Value="test_Config1" />
+    <Parameter ID="UserPartitionSize" Value="0" />
+    <Parameter ID="Simulation" Value="1" />
+    <Parameter ID="SystemTick" Value="2000" />
+    <Parameter ID="TaskClassIdleTime" Value="2000" />
+    <Parameter ID="Cyclic1Duration" Value="10000" />
+    <Parameter ID="Cyclic1Tolerance" Value="10000" />
+    <Group ID="FileDevice1" />
+    <Parameter ID="FileDeviceName1" Value="USER" />
+    <Parameter ID="FileDevicePath1" Value="USER_PATH" />
+    <Parameter ID="ActivateOpcUa" Value="1" />
+    <Parameter ID="OpcUaInformationModels_PV_Version" Value="1" />
+  </Module>
+  <Module Name="X20IF10E1_1" Type="X20IF10E1-1" Version="1.3.0.0">
+    <Connection Connector="SS" TargetModule="X20CP3687X" TargetConnector="SS3" />
+    <Connector Name="IF1">
+      <Parameter ID="DtmRef" Value="FBDIF.Hilscher.PNIOControllerDTM2.NETX 100 RE/PNM" />
+      <Parameter ID="DtmId" Value="4870dd29-df36-4f11-b5ef-296e9fb52452" />
+    </Connector>
+    <Parameter ID="ConfigFile" Value="X20IF10E1_1.dtm" />
+    <Parameter ID="ConfigModule" Value="asnxdb1" />
+  </Module>
+</Hardware>

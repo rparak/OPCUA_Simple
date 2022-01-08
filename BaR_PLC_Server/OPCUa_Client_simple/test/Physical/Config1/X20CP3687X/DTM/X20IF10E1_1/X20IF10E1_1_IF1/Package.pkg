@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<Package xmlns="http://br-automation.co.at/AS/Package">
+  <Objects>
+    <Object Type="File">X20IF10E1_1_IF1.dtmdre</Object>
+    <Object Type="File">X20IF10E1_1_IF1.dtmdra</Object>
+    <Object Type="File">X20IF10E1_1_IF1.dtmtre</Object>
+    <Object Type="File">X20IF10E1_1_IF1.dtmdri</Object>
+  </Objects>
+</Package>

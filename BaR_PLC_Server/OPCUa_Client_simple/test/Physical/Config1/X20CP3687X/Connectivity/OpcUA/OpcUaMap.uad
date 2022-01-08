@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?AutomationStudio FileVersion="4.9"?>
+<OpcUaSource FileVersion="7" ArVersion="B4.91">
+  <Aliases>
+    <ACLAliases />
+    <EURangeViolationAliases />
+    <EURangesAliases />
+    <EngineeringUnitAliases />
+  </Aliases>
+  <DefaultView>
+    <Module Name="&lt;Default&gt;">
+      <Task Name="Program">
+        <Variable Name="Test_Variable_REAL_W" EnableArrayElements="True" />
+        <Variable Name="Test_Variable_REAL_R" EnableArrayElements="True" />
+      </Task>
+    </Module>
+  </DefaultView>
+</OpcUaSource>
