@@ -68,10 +68,43 @@ Client (Python) - Repositary [/Python_Client/]:
 [ Data Evalation              ] /opcua_evaluation.py/
 
 Data - Repositary [/Python_Client/Data/]:
-[ Collection Data (Python, C#) ] /CSharp_OPC_UA_Data_Evaluation_Sync.txt/ 
+[ Collected data (Python, C#) ] /CSharp_OPC_UA_Data_Evaluation_Sync.txt/ 
                                  /Python_OPC_UA_Data_Evaluation_ASync.txt/ 
                                  /Python_OPC_UA_Data_Evaluation_Sync.txt/
 ```
+
+## Evaluation: Client -> Server:
+
+**Python Sync.:**
+<p align="center">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/Python_OPCUA_Client_Server_Sync.PNG" width="800" height="450">
+</p>
+
+**Python ASync.:**
+<p align="center">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/Python_OPCUA_Client_Server_ASync.PNG" width="800" height="450">
+</p>
+
+**CSharp:**
+<p align="center">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/CSharp_OPCUA_Client_Server.PNG" width="800" height="450">
+</p>
+
+## Evaluation: Server -> Client:
+**Python Sync.:**
+<p align="center">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/Python_OPCUA_Server_Client_Sync.PNG" width="800" height="450">
+</p>
+
+**Python ASync.:**
+<p align="center">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/Python_OPCUA_Server_Client_ASync.PNG" width="800" height="450">
+</p>
+
+**CSharp:**
+<p align="center">
+ <img src="https://github.com/rparak/OPCUA_Simple/blob/main/images/CSharp_OPCUA_Server_Client.PNG" width="800" height="450">
+</p>
 
 ## Contact Info:
 Roman.Parak@outlook.com
