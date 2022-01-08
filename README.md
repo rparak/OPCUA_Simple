@@ -39,7 +39,8 @@ The project was realized at the Institute of Automation and Computer Science, Br
 
 ```bash
 ns = all variables use a number (6)
-s (Part 1) = Task/Program name
+s (Part 1) = Program (Task) Name, 
+  Note: If the variable is global, the task name is AsGlobalPV.
 s (Part 2) = Variable (read / write)
 
 string -> "ns=6;s=::Task:Var"
