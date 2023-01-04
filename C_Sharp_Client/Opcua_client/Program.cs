@@ -293,11 +293,9 @@ namespace OpcUa_client
         public void Stop()
         {
             exit_thread = true;
-            // Start a thread
-            if (opcua_thread.IsAlive == true)
-            {
-                Thread.Sleep(100);
-            }
+            // Stop a thread
+            Thread.Sleep(100);
+            opcua_thread.Abort();
         }
         public void Destroy()
         {
@@ -464,11 +462,9 @@ namespace OpcUa_client
         public void Stop()
         {
             exit_thread = true;
-            // Start a thread
-            if (opcua_thread.IsAlive == true)
-            {
-                Thread.Sleep(100);
-            }
+            // Stop a thread
+            Thread.Sleep(100);
+            opcua_thread.Abort();
         }
         public void Destroy()
         {
