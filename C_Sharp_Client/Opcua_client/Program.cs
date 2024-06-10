@@ -277,8 +277,7 @@ namespace OpcUa_client
                 ApplicationName = "OPCUa_AS",
                 ApplicationType = ApplicationType.Client,
                 ApplicationConfiguration = config
-            };
-            
+            };  
             application.CheckApplicationInstanceCertificate(false, 2048).GetAwaiter().GetResult();
             */
 
@@ -400,6 +399,7 @@ namespace OpcUa_client
                 config.CertificateValidator.CertificateValidation += (s, e) => { e.Accept = (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted); };
             }
 
+            /*
             var application = new ApplicationInstance
             {
                 ApplicationName = "OPCUa_AS",
@@ -407,7 +407,7 @@ namespace OpcUa_client
                 ApplicationConfiguration = config
             };
             application.CheckApplicationInstanceCertificate(false, 2048).GetAwaiter().GetResult();
-
+            */
             return config;
         }
 
