@@ -111,11 +111,11 @@ namespace OpcUa_client
              */
 
             // Start Read {OPC UA Communication}
-            //OpcUa_Read opcua_read_plc = new OpcUa_Read();
+            //OPC_UA_Client_Read_Data_Cls opcua_read_plc = new OPC_UA_Client_Read_Data_Cls();
             //opcua_read_plc.Start();
 
             // Start Read {OPC UA Communication}
-            OpcUa_Write opcua_write_plc = new OpcUa_Write();
+            OPC_UA_Client_Write_Data_Cls opcua_write_plc = new OPC_UA_Client_Write_Data_Cls();
             opcua_write_plc.Start();
 
             Console.WriteLine("[INFO] Stop (y):");
@@ -175,25 +175,63 @@ namespace OpcUa_client
         }
     }
 
-    class OpcUa_Read
+    public static Session OPC_UA_Client_Create_Session(ApplicationConfiguration client_configuration, EndpointDescription client_end_point)
     {
-        // Initialization of Class variables
-        //  Thread
-        private Thread opcua_thread = null;
+        return Session.Create(client_configuration, new ConfiguredEndpoint(null, client_end_point, EndpointConfiguration.Create(client_configuration)), false, "", 10000, null, null).GetAwaiter().GetResult();
+    }
+
+    public static ApplicationConfiguration OPC_UA_Client_Configuration()
+    {
+        // Configuration OPCUA Client {W/R -> Data}
+        var config = new ApplicationConfiguration()
+        {
+            // Initialization (Name, Uri, etc.)
+            ApplicationName = "OPCUA_AS", // OPCUA AS (Automation Studio B&R)
+            ApplicationUri = Utils.Format(@"urn:{0}:OPCUA_AS", System.Net.Dns.GetHostName()),
+            // Type -> Client
+            ApplicationType = ApplicationType.Client,
+            SecurityConfiguration = new SecurityConfiguration
+            {
+                // Security Configuration - Certificate
+                ApplicationCertificate = new CertificateIdentifier { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\MachineDefault", SubjectName = Utils.Format(@"CN={0}, DC={1}", "OPCUA_AS", System.Net.Dns.GetHostName()) },
+                TrustedIssuerCertificates = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\UA Certificate Authorities" },
+                TrustedPeerCertificates = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\UA Applications" },
+                RejectedCertificateStore = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\RejectedCertificates" },
+                AutoAcceptUntrustedCertificates = true,
+                AddAppCertToTrustedStore = true
+            },
+            TransportConfigurations = new TransportConfigurationCollection(),
+            TransportQuotas = new TransportQuotas { OperationTimeout = 10000 },
+            ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 50000 },
+            TraceConfiguration = new TraceConfiguration()
+        };
+        config.Validate(ApplicationType.Client).GetAwaiter().GetResult();
+        if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
+        {
+            config.CertificateValidator.CertificateValidation += (s, e) => { e.Accept = (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted); };
+        }
+
+        return config;
+    }
+    
+    class OPC_UA_Client_Read_Data_Cls
+    {
+        // Initialization of the class variables.
+        private Thread ctrl_thread = null;
         private bool exit_thread = false;
-        //  OPCUa Client 
+        // OPC UA client app. configuration class.
         ApplicationConfiguration app_configuration = new ApplicationConfiguration();
 
-        public void OpcUa_Read_Thread()
+        public void Cls_Core_Thread()
         {
             try
             {
-                // OPCUa Client configuration
-                app_configuration = OpcUa_Client_Configuration();
-                // Establishing communication
+                // OPC UA Client configuration.
+                app_configuration = OPC_UA_Client_Configuration();
+                // Establishing communication.
                 EndpointDescription end_point = CoreClientUtils.SelectEndpoint("opc.tcp://" + OpcUa_Read_Data.ip_address + ":" + OpcUa_Read_Data.port_number, useSecurity: false);
-                // Create session
-                Session client_session = OpcUa_Create_Session(app_configuration, end_point);
+                // Create session.
+                Session client_session = OPC_UA_Client_Create_Session(app_configuration, end_point);
 
                 // Initialization timer
                 var t = new Stopwatch();
@@ -235,96 +273,55 @@ namespace OpcUa_client
             }
         }
 
-        Session OpcUa_Create_Session(ApplicationConfiguration client_configuration, EndpointDescription client_end_point)
-        {
-            return Session.Create(client_configuration, new ConfiguredEndpoint(null, client_end_point, EndpointConfiguration.Create(client_configuration)), false, "", 10000, null, null).GetAwaiter().GetResult();
-        }
-
-        ApplicationConfiguration OpcUa_Client_Configuration()
-        {
-            // Configuration OPCUa Client {W/R -> Data}
-            var config = new ApplicationConfiguration()
-            {
-                // Initialization (Name, Uri, etc.)
-                ApplicationName = "OPCUa_AS", // OPCUa AS (Automation Studio B&R)
-                ApplicationUri = Utils.Format(@"urn:{0}:OPCUa_AS", System.Net.Dns.GetHostName()),
-                // Type -> Client
-                ApplicationType = ApplicationType.Client,
-                SecurityConfiguration = new SecurityConfiguration
-                {
-                    // Security Configuration - Certificate
-                    ApplicationCertificate = new CertificateIdentifier { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\MachineDefault", SubjectName = Utils.Format(@"CN={0}, DC={1}", "OPCUa_AS", System.Net.Dns.GetHostName()) },
-                    TrustedIssuerCertificates = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\UA Certificate Authorities" },
-                    TrustedPeerCertificates = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\UA Applications" },
-                    RejectedCertificateStore = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\RejectedCertificates" },
-                    AutoAcceptUntrustedCertificates = true,
-                    AddAppCertToTrustedStore = true
-                },
-                TransportConfigurations = new TransportConfigurationCollection(),
-                TransportQuotas = new TransportQuotas { OperationTimeout = 10000 },
-                ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 50000 },
-                TraceConfiguration = new TraceConfiguration()
-            };
-            config.Validate(ApplicationType.Client).GetAwaiter().GetResult();
-            if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
-            {
-                config.CertificateValidator.CertificateValidation += (s, e) => { e.Accept = (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted); };
-            }
-
-            /*
-            var application = new ApplicationInstance
-            {
-                ApplicationName = "OPCUa_AS",
-                ApplicationType = ApplicationType.Client,
-                ApplicationConfiguration = config
-            };  
-            application.CheckApplicationInstanceCertificate(false, 2048).GetAwaiter().GetResult();
-            */
-
-            return config;
-        }
-
         public void Start()
         {
             exit_thread = false;
-            // Start a thread to read OPCUA PLC
-            opcua_thread = new Thread(new ThreadStart(OpcUa_Read_Thread));
-            opcua_thread.IsBackground = true;
-            opcua_thread.Start();
+            // Start a thread to write data to the OPC UA server.
+            ctrl_thread = new Thread(new ThreadStart(Cls_Core_Thread));
+            ctrl_thread.IsBackground = true;
+            ctrl_thread.Start();
+
+            // The thread is active.
+            opc_ua_client_w_is_alive = true;
         }
+
         public void Stop()
         {
             exit_thread = true;
-            // Stop a thread
+            ctrl_thread.Abort();
+            // Stop a thread.
             Thread.Sleep(100);
+
+            // The thread is inactive.
+            opc_ua_client_w_is_alive = false;
         }
+
         public void Destroy()
         {
-            // Stop a thread (OPCUA communication)
+            // Stop a thread (OPC UA communication).
             Stop();
             Thread.Sleep(100);
         }
     }
 
-    class OpcUa_Write
+    class OPC_UA_Client_Write_Data_Cls
     {
-        // Initialization of Class variables
-        //  Thread
-        private Thread opcua_thread = null;
+        // Initialization of the class variables.
+        private Thread ctrl_thread = null;
         private bool exit_thread = false;
-        //  OPCUa Client 
+        // OPC UA client app. configuration class.
         ApplicationConfiguration app_configuration = new ApplicationConfiguration();
 
-        public void OpcUa_Write_Thread()
+        public void Cls_Core_Thread()
         {
             try
             {
-                // OPCUa Client configuration
-                app_configuration = OpcUa_Client_Configuration();
+                // OPC UA Client configuration.
+                app_configuration = OPC_UA_Client_Configuration();
                 // Establishing communication
                 EndpointDescription end_point = CoreClientUtils.SelectEndpoint("opc.tcp://" + OpcUa_Read_Data.ip_address + ":" + OpcUa_Read_Data.port_number, useSecurity: false);
-                // Create session
-                Session client_session = OpcUa_Create_Session(app_configuration, end_point);
+                // Create session.
+                Session client_session = OPC_UA_Client_Create_Session(app_configuration, end_point);
 
                 // Initialization timer
                 var t = new Stopwatch();
@@ -361,54 +358,6 @@ namespace OpcUa_client
             {
                 Console.WriteLine("Communication Problem: {0}", e);
             }
-        }
-
-        Session OpcUa_Create_Session(ApplicationConfiguration client_configuration, EndpointDescription client_end_point)
-        {
-            return Session.Create(client_configuration, new ConfiguredEndpoint(null, client_end_point, EndpointConfiguration.Create(client_configuration)), false, "", 10000, null, null).GetAwaiter().GetResult();
-        }
-
-        ApplicationConfiguration OpcUa_Client_Configuration()
-        {
-            // Configuration OPCUa Client {W/R -> Data}
-            var config = new ApplicationConfiguration()
-            {
-                // Initialization (Name, Uri, etc.)
-                ApplicationName = "OPCUa_AS", // OPCUa AS (Automation Studio B&R)
-                ApplicationUri = Utils.Format(@"urn:{0}:OPCUa_AS", System.Net.Dns.GetHostName()),
-                // Type -> Client
-                ApplicationType = ApplicationType.Client,
-                SecurityConfiguration = new SecurityConfiguration
-                {
-                    // Security Configuration - Certificate
-                    ApplicationCertificate = new CertificateIdentifier { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\MachineDefault", SubjectName = Utils.Format(@"CN={0}, DC={1}", "OPCUa_AS", System.Net.Dns.GetHostName()) },
-                    TrustedIssuerCertificates = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\UA Certificate Authorities" },
-                    TrustedPeerCertificates = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\UA Applications" },
-                    RejectedCertificateStore = new CertificateTrustList { StoreType = @"Directory", StorePath = @"%CommonApplicationData%\OPC Foundation\CertificateStores\RejectedCertificates" },
-                    AutoAcceptUntrustedCertificates = true,
-                    AddAppCertToTrustedStore = true
-                },
-                TransportConfigurations = new TransportConfigurationCollection(),
-                TransportQuotas = new TransportQuotas { OperationTimeout = 10000 },
-                ClientConfiguration = new ClientConfiguration { DefaultSessionTimeout = 10000 },
-                TraceConfiguration = new TraceConfiguration()
-            };
-            config.Validate(ApplicationType.Client).GetAwaiter().GetResult();
-            if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
-            {
-                config.CertificateValidator.CertificateValidation += (s, e) => { e.Accept = (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted); };
-            }
-
-            /*
-            var application = new ApplicationInstance
-            {
-                ApplicationName = "OPCUa_AS",
-                ApplicationType = ApplicationType.Client,
-                ApplicationConfiguration = config
-            };
-            application.CheckApplicationInstanceCertificate(false, 2048).GetAwaiter().GetResult();
-            */
-            return config;
         }
 
         bool OpcUa_Write_Value(Session client_session, string node_id, string value_write)
@@ -456,20 +405,29 @@ namespace OpcUa_client
         public void Start()
         {
             exit_thread = false;
-            // Start a thread to read OPCUA PLC
-            opcua_thread = new Thread(new ThreadStart(OpcUa_Write_Thread));
-            opcua_thread.IsBackground = true;
-            opcua_thread.Start();
+            // Start a thread to write data to the OPC UA server.
+            ctrl_thread = new Thread(new ThreadStart(Cls_Core_Thread));
+            ctrl_thread.IsBackground = true;
+            ctrl_thread.Start();
+
+            // The thread is active.
+            opc_ua_client_w_is_alive = true;
         }
+
         public void Stop()
         {
             exit_thread = true;
-            // Stop a thread
+            ctrl_thread.Abort();
+            // Stop a thread.
             Thread.Sleep(100);
+
+            // The thread is inactive.
+            opc_ua_client_w_is_alive = false;
         }
+
         public void Destroy()
         {
-            // Stop a thread (OPCUA communication)
+            // Stop a thread (OPC UA communication).
             Stop();
             Thread.Sleep(100);
         }
